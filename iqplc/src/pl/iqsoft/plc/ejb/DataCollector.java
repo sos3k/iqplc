@@ -24,7 +24,7 @@ import pl.iqsoft.plc.collector.SlowFloatCollectorTask;
 import pl.iqsoft.plc.collector.StatusCollectorTask;
 
 @Singleton
-@Startup
+//@Startup
 public class DataCollector {
 	
 	private Socket connection;
@@ -52,7 +52,7 @@ public class DataCollector {
 					this.collectorTasks.add(new StatusCollectorTask(connection, out, in));
 					this.collectorTasks.add(new CounterCollectorTask(connection, out, in));
 					
-					startCollecting();
+//					startCollecting();
 				}
 			}
 		} 

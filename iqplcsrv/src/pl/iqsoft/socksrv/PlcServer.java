@@ -21,7 +21,7 @@ public class PlcServer {
 	
 	void run()
 	{
-		try{
+		try {
 			//1. creating a server socket
 			providerSocket = new ServerSocket(5555, 10);
 			//2. Wait for connection

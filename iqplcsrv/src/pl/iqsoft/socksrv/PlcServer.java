@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 
 public class PlcServer {
 	ServerSocket providerSocket;
@@ -28,9 +30,8 @@ public class PlcServer {
 			System.out.println("Connection received from " + connection.getInetAddress().getHostName());
 			//3. get Input and Output streams
 			out = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
-			out.flush();
 			in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			sendMessage("Connection successful");
+//			sendMessage("Connection successful");
 			
 			//4. The two parts communicate via the input and output streams
 			while (true) {
@@ -48,7 +49,10 @@ public class PlcServer {
 						break;
 					}
 					else {
-						System.out.println("client>" + message + " [size: " + dataSize + "]");
+//						System.out.println("client>" + message + " [size: " + dataSize + "]");
+						char[] cbuf = CharBuffer.allocate(4).put('1').put('2').put('3').put('4').array();
+						
+						sendMessage(String.valueOf(cbuf));
 					}
 				}
 			}
@@ -73,10 +77,10 @@ public class PlcServer {
 	}
 	void sendMessage(String msg)
 	{
-		try{
+		try {
 			out.write(msg);
 			out.flush();
-			System.out.println("server>" + msg);
+//			System.out.println("server>" + msg);
 		}
 		catch(IOException ioException){
 			ioException.printStackTrace();

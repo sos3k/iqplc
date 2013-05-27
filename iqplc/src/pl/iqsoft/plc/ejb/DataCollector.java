@@ -24,7 +24,7 @@ import pl.iqsoft.plc.collector.SlowFloatCollectorTask;
 import pl.iqsoft.plc.collector.StatusCollectorTask;
 
 @Singleton
-//@Startup
+@Startup
 public class DataCollector {
 	
 	private Socket connection;
@@ -64,7 +64,7 @@ public class DataCollector {
 			} 
 			catch (InterruptedException iex) {}
 			
-//			initConnection();
+			initConnection();
 		}
 	}
 	

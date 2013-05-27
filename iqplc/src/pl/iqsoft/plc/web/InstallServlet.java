@@ -3,6 +3,8 @@ package pl.iqsoft.plc.web;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import javax.ejb.EJB;
+import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import pl.iqsoft.plc.ejb.DataCollector;
 import pl.iqsoft.plc.jpa.DataSource;
 import pl.iqsoft.plc.jpa.Measurement;
 import pl.iqsoft.plc.jpa.Unit;
@@ -17,10 +20,13 @@ import pl.iqsoft.plc.jpa.Unit;
 /**
  * Servlet for IQPLC instalation process
  */
+@SuppressWarnings("serial")
 @WebServlet("/install")
 public class InstallServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
     
+	@EJB
+	private DataCollector dataCollector;
+	
 	/**
 	 * @see Servlet#init(ServletConfig)
 	 */
@@ -33,9 +39,7 @@ public class InstallServlet extends HttpServlet {
 		PrintWriter writer = resp.getWriter();
 		
 		try {
-			Measurement measurement = new Measurement();
-			Unit unit = new Unit();
-			DataSource dataSource = new DataSource();
+			dataCollector.startCollecting();
 			
 			writer.write("OK");
 		}

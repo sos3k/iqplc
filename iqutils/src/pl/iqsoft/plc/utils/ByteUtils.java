@@ -6,6 +6,17 @@ public class ByteUtils {
 	public byte[] toByteArray(int value) {
 	     return  ByteBuffer.allocate(4).putInt(value).array();
 	}
+	
+	public char[] toCharArray(int value) {
+	     byte[] bytes = toByteArray(value);
+	     char[] chars = new char[bytes.length];
+	     
+	     for (int i=0; i<bytes.length; i++) {
+	    	 chars[i] = (char) bytes[i];
+	     }
+	     
+	     return chars;
+	}
 
 	public int fromByteArray(byte[] bytes) {
 	     return ByteBuffer.wrap(bytes).getInt();

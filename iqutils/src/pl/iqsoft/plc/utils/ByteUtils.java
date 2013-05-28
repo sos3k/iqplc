@@ -8,14 +8,16 @@ public class ByteUtils {
 	}
 	
 	public char[] toCharArray(int value) {
-	     byte[] bytes = toByteArray(value);
-	     char[] chars = new char[bytes.length];
-	     
-	     for (int i=0; i<bytes.length; i++) {
-	    	 chars[i] = (char) bytes[i];
-	     }
-	     
-	     return chars;
+		System.err.println("INT: " + value);
+				
+		byte[] bytes = toByteArray(value);
+		char[] chars = new char[bytes.length];
+		
+		for (int i=0; i<bytes.length; i++) {
+			chars[i] = (char) bytes[i];
+		}
+		
+		return chars;
 	}
 
 	public int fromByteArray(byte[] bytes) {
@@ -44,5 +46,25 @@ public class ByteUtils {
 		long floatInteger = fromByteArray(bytes);
 		
 		return floatInteger;
+	}
+	
+	public String convertCharArrayToString(char[] chars) {
+		StringBuffer stringBuffer = new StringBuffer();
+		
+		for (int i=0; i<chars.length; i++) {
+			stringBuffer.append(String.format("%1$04x", (chars[i] & 0xFFFF)));			
+		}
+		
+		return stringBuffer.toString();
+	}
+	
+	public String convertByteArrayToString(byte[] bytes) {
+		StringBuffer stringBuffer = new StringBuffer();
+		
+		for (int i=0; i<bytes.length; i++) {
+			stringBuffer.append(String.format("%1$04x", (bytes[i] & 0xFFFF)));			
+		}
+		
+		return stringBuffer.toString();
 	}
 }

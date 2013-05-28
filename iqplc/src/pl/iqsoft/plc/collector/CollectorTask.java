@@ -3,8 +3,8 @@ package pl.iqsoft.plc.collector;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.net.Socket;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public abstract class CollectorTask implements Runnable {
 
@@ -18,19 +18,18 @@ public abstract class CollectorTask implements Runnable {
 		this.in = in;
 	}
 	
-	public abstract void runCollection();
 	public abstract String getCommand();
 	public abstract Integer getResponseByteSize();
 	public abstract Number getValue(char[] valueChars);
 	
-	protected Map<Integer, Number> readData() throws Exception {
+	private List<Number> readData() throws Exception {
 		String command = getCommand();
 		Integer responseByteSize = getResponseByteSize();
 		
 		char[] buffer = new char[256];
 		char[] valueChars = null;
 		
-		Map<Integer, Number> values = new TreeMap<>();
+		List<Number> values = new LinkedList<>();
 		
 		out.write(command);
 		out.flush();
@@ -49,7 +48,8 @@ public abstract class CollectorTask implements Runnable {
 			valueChars[i % responseByteSize] = buffer[i];
 			
 			if ((i % responseByteSize) == (responseByteSize - 1)) {
-				values.put((int) (i / responseByteSize), getValue(valueChars));
+				Number n = getValue(valueChars);
+				values.add(n);
 			}
 		}
 		
@@ -61,7 +61,11 @@ public abstract class CollectorTask implements Runnable {
 		try {
 			if (this.connection != null && this.out != null && this.in != null) {
 				synchronized (this.connection) {
-					runCollection();	
+					System.out.println("Uruchomi³em w¹tek " + getClass().getCanonicalName());
+					
+					List<Number> values = readData();
+					
+					System.out.println("Przeczyta³em " + values.size() + " wartoœci. Pierwsza z brzegu to: " + (values.size() > 0 ? values.get(0) : -1));
 				}				
 			}			
 		}

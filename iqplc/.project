@@ -3,6 +3,7 @@
 	<name>iqplc</name>
 	<comment></comment>
 	<projects>
+		<project>iqutils</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

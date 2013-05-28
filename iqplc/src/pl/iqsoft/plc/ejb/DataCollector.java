@@ -15,7 +15,6 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.Singleton;
-import javax.ejb.Startup;
 
 import pl.iqsoft.plc.collector.CollectorTask;
 import pl.iqsoft.plc.collector.CounterCollectorTask;
@@ -31,6 +30,7 @@ public class DataCollector {
 	private BufferedWriter out;
 	private BufferedReader in;
 	
+	private ScheduledExecutorService scheduler;	
 	private List<CollectorTask> collectorTasks;
 	
 	public DataCollector() {
@@ -39,20 +39,19 @@ public class DataCollector {
 	@PostConstruct
 	public void initConnection() {
 		try {
+			this.scheduler = new ScheduledThreadPoolExecutor(4);
 			this.collectorTasks = new LinkedList<>();
 			this.connection = new Socket("localhost", 5555);
 			
 			if (this.connection != null && !this.connection.isClosed()) {
-				out = new BufferedWriter(new OutputStreamWriter(this.connection.getOutputStream()));
-				in = new BufferedReader(new InputStreamReader(this.connection.getInputStream()));
+				this.out = new BufferedWriter(new OutputStreamWriter(this.connection.getOutputStream()));
+				this.in = new BufferedReader(new InputStreamReader(this.connection.getInputStream()));
 				
 				if (this.in != null && this.out != null) {
-					this.collectorTasks.add(new FastFloatCollectorTask(connection, out, in));
-					this.collectorTasks.add(new SlowFloatCollectorTask(connection, out, in));
-					this.collectorTasks.add(new StatusCollectorTask(connection, out, in));
-					this.collectorTasks.add(new CounterCollectorTask(connection, out, in));
-					
-//					startCollecting();
+					this.collectorTasks.add(new FastFloatCollectorTask(this.connection, this.out, this.in));
+//					this.collectorTasks.add(new SlowFloatCollectorTask(connection, out, in));
+//					this.collectorTasks.add(new StatusCollectorTask(connection, out, in));
+//					this.collectorTasks.add(new CounterCollectorTask(connection, out, in));
 				}
 			}
 		} 
@@ -60,7 +59,7 @@ public class DataCollector {
 			System.err.println("Nie uda³o siê po³¹czyæ z serwerem ponawiam wiêc próbê...");
 			
 			try {
-				Thread.sleep(10000);
+				Thread.sleep(1000);
 			} 
 			catch (InterruptedException iex) {}
 			
@@ -69,14 +68,20 @@ public class DataCollector {
 	}
 	
 	public void startCollecting() {
-		if (this.collectorTasks != null && this.collectorTasks.size() > 0) {
-			ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(4);
-			
-			for (CollectorTask task : this.collectorTasks) {
-				if (task != null) {					
-					scheduler.scheduleAtFixedRate(task, 0, 4, TimeUnit.SECONDS);
-				}
+		if (this.scheduler != null) {
+			if (this.collectorTasks != null && this.collectorTasks.size() > 0) {
+				for (CollectorTask task : this.collectorTasks) {
+					if (task != null) {					
+						this.scheduler.scheduleAtFixedRate(task, 0, 4, TimeUnit.SECONDS);
+					}
+				}				
 			}
+		}
+	}
+	
+	public void stopCollecting() {
+		if (this.scheduler != null) {
+			this.scheduler.shutdown();
 		}
 	}
 	
